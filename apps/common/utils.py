@@ -180,15 +180,14 @@ def timesince(dt, since='', default="just now"):
 
 
 def ssh_key_string_to_obj(text):
-    key_f = StringIO(text)
     key = None
     try:
-        key = paramiko.RSAKey.from_private_key(key_f)
+        key = paramiko.RSAKey.from_private_key( StringIO(text) )
     except paramiko.SSHException:
         pass
 
     try:
-        key = paramiko.DSSKey.from_private_key(key_f)
+        key = paramiko.DSSKey.from_private_key( StringIO(text) )
     except paramiko.SSHException:
         pass
     return key
@@ -240,7 +239,11 @@ def ssh_key_gen(length=2048, type='rsa', password=None, username='jumpserver', h
 
 def validate_ssh_private_key(text):
     if isinstance(text, bytes):
-        text = text.decode("utf-8")
+        try:
+            text = text.decode("utf-8")
+        except UnicodeDecodeError:
+            return False
+
     key = ssh_key_string_to_obj(text)
     if key is None:
         return False

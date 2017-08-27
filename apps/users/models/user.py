@@ -73,7 +73,7 @@ class User(AbstractUser):
 
     @property
     def is_expired(self):
-        if self.date_expired < timezone.now():
+        if self.date_expired and self.date_expired < timezone.now():
             return True
         else:
             return False
